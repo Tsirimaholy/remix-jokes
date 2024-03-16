@@ -11,13 +11,17 @@ export const links: LinksFunction = () => [
 
 export const loader = async () => {
   return json({
-    jokes: await db.joke.findMany()
+    jokes: await db.joke.findMany({
+      orderBy: { createdAt: "desc" },
+      select: { id: true, name: true },
+      take: 5
+    })
   })
 }
 
 export default function JokesRoute() {
-  const { jokes} = useLoaderData<typeof loader>();
-  
+  const { jokes } = useLoaderData<typeof loader>();
+
 
   return (
     <div className="jokes-layout">
