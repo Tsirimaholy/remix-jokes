@@ -46,7 +46,7 @@ export default function JokesRoute() {
             <p>Here are a few more jokes to check out:</p>
             <ul>
               {jokes.map((joke) => (
-                <li><Link to={joke.id} key={joke.id}>{joke.name}</Link></li>
+                <li key={joke.id}><Link to={joke.id} >{joke.name}</Link></li>
               ))}
             </ul>
 
