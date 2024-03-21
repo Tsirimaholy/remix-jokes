@@ -2,6 +2,7 @@ import { ActionFunction, ActionFunctionArgs, redirect } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/request.server";
+import { requireUserId } from "~/utils/session.server";
 
 
 function validateJokeName(name: string) {
@@ -19,6 +20,7 @@ export const action: ActionFunction = async ({ request }: ActionFunctionArgs) =>
   const form = await request.formData();
   const name = form.get("name");
   const content = form.get("content");
+  const userId = await requireUserId(request);
 
 
   if (typeof name !== "string" || typeof content !== "string") {
@@ -33,7 +35,7 @@ export const action: ActionFunction = async ({ request }: ActionFunctionArgs) =>
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({ fieldErrors, fields, formError: null })
   }
-  const joke = await db.joke.create({ data: fields })
+  const joke = await db.joke.create({ data: {...fields, jokesterId: userId} })
   return redirect(`/jokes/${joke.id}`)
 }
 
@@ -46,7 +48,7 @@ export default function NewJokeRoute() {
       <form method="post">
         <div>
           <label>
-            Name:
+            Name: {" "}
             <input
               type="text"
               name="name"
@@ -66,7 +68,7 @@ export default function NewJokeRoute() {
         </div>
         <div>
           <label>
-            Content:
+            Content: ${" "}
             <textarea
               name="content"
               defaultValue={actionData?.fields?.content}
