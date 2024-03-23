@@ -49,6 +49,32 @@ export async function getUserId(request: Request) {
   return userId;
 }
 
+export async function getUser(request: Request) {
+  const userId = await getUserId(request);
+  if (typeof userId !== "string") {
+    return null;
+  }
+
+  const user = await db.user.findUnique({
+    select: { id: true, username: true },
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw await logout(request);
+  }
+
+  return user;
+}
+
+export async function logout(request: Request) {
+  const session = await getUserSession(request);
+  return redirect("/login", {
+    headers: {
+      "Set-Cookie": await storage.destroySession(session),
+    },
+  });
+}
 export async function requireUserId(
   request: Request,
   redirectTo: string = new URL(request.url).pathname
