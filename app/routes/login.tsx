@@ -11,7 +11,11 @@ import {
 import stylesUrl from "~/styles/login.css";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/request.server";
-import { createUserSession, login } from "~/utils/session.server";
+import {
+  createUserSession,
+  login,
+  register,
+} from "~/utils/session.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesUrl },
@@ -97,13 +101,16 @@ export const action = async ({
           formError: `User with username ${username} already exists`,
         });
       }
-      // create the user
-      // create their session and redirect to /jokes
-      return badRequest({
-        fieldErrors: null,
-        fields,
-        formError: "Not implemented",
-      });
+      const user = await register({ username, password });
+      if (!user) {
+        return badRequest({
+          fieldErrors: null,
+          fields,
+          formError:
+            "Something went wrong trying to create a new user.",
+        });
+      }
+      return createUserSession(user.id, redirectTo);
     }
     default: {
       return badRequest({
