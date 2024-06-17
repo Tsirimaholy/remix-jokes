@@ -26,13 +26,6 @@ function validateUsername(username: string) {
     return "Usernames must be at least 3 characters long";
   }
 }
-
-function validatePassword(password: string) {
-  if (password.length < 6) {
-    return "Passwords must be at least 6 characters long";
-  }
-}
-
 function validateUrl(url: string) {
   const urls = ["/jokes", "/", "https://remix.run"];
   if (urls.includes(url)) {
@@ -40,6 +33,13 @@ function validateUrl(url: string) {
   }
   return "/jokes";
 }
+function validatePassword(password: string) {
+  if (password.length < 6) {
+    return "Passwords must be at least 6 characters long";
+  }
+}
+
+
 
 export const action = async ({
   request,
